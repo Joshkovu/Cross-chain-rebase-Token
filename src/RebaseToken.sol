@@ -81,14 +81,29 @@ function _calculateUserAccumulatedInterestSinceLastUpdate(address _user) interna
      /////////////////////////
     // Internal functions //
     ///////////////////////
+    /**
+     * This contract mints interest to the user since the last time they interacted with the protocol eg mint, burn transfer
+     * 
+     * @param _user The user to mint the accrued interest to 
+     */
     function _mintAccruedInterest(address _user) internal {
         //find the current balance of rebase tokens that have been minted to the user
+         uint256 previousPrincipalBalance = super.balanceOf(_user);
         // calculate their current balance including any interest
+        uint256 currentBalance = balanceOf(_user);
         // calculate the number of tokens that need to be minted to the user 
-        //call _mint to mint the tokens to the user
+        uint256 balanceIncrease = currentBalance - previousPrincipalBalance;
+        
+        
         // set the users last updated timestamp
+       
+
 
         sUserLastUpdatedTimestamp[_user] = block.timestamp;
+        // mint the tokens to the user
+        _mint(_user, balanceIncrease);
+
+        //call _mint to mint the tokens to the user
 
     }
 
@@ -116,10 +131,23 @@ function _calculateUserAccumulatedInterestSinceLastUpdate(address _user) interna
  * @param _amount The amount of tokens to mint 
  */
     function mint(address _to, uint256 _amount) external {
-        _mintAccruedInterest(_to)
+        _mintAccruedInterest(_to);
         sUserInterestRate[_to] = sInterestRate;
         _mint(_to, _amount);
     }
+    /**
+     * @notice Burn the user tokens when they withdraw from the vault
+     * @param _from The user to burn the tokens from 
+     * @param _amount The amount of tokens to burn 
+     */
+    function burn(address _from, uint256 _amount) external {
+       if(_amount == type(uint256).max){
+        _amount = balanceOf(_from);
+       }
+        _mintAccruedInterest(_from);
+         _burn(_from, _amount);
+    }
+
     /**
      * @notice This function returns the user's interest rate
      * @param _user this is the user whose interest rate is being returned to 
