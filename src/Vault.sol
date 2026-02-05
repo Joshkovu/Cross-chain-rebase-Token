@@ -39,6 +39,9 @@ contract Vault {
      * @param _amount This is the amount of tokens that the user wants to redeem
      */
     function redeem(uint256 _amount) external {
+        if (_amount == type(uint256).max) {
+            _amount = I_REBASETOKEN.balanceOf(msg.sender);
+        }
         //1. burn the tokens from the user
         I_REBASETOKEN.burn(msg.sender, _amount);
 
