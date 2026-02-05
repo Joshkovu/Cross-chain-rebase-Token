@@ -25,7 +25,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
     /////////////////////////
     // State variables //
     ///////////////////////
-    uint256 private sInterestRate = 5e10;
+    uint256 private sInterestRate = (5 * LINEAR_PRECISION) / 1e8;
     mapping(address to => uint256 amount) private sUserInterestRate;
     mapping(address => uint256) private sUserLastUpdatedTimestamp;
     bytes32 private constant MINT_AND_BURN_ROLE =
@@ -156,7 +156,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
      * @dev The interest rate can only decrease
      */
     function setInterestRate(uint256 _newInterestRate) external onlyOwner {
-        if (_newInterestRate < sInterestRate) {
+        if (_newInterestRate > sInterestRate) {
             revert RebaseToken__InterestRateCanOnlyDecrease(
                 sInterestRate,
                 _newInterestRate
