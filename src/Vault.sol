@@ -29,7 +29,8 @@ contract Vault {
      */
     function deposit() external payable {
         // 1. use the amount of ETH to mint the right amount of tokens to the user
-        I_REBASETOKEN.mint(msg.sender, msg.value);
+        uint256 interestRate = I_REBASETOKEN.getUserInterestRate(msg.sender);
+        I_REBASETOKEN.mint(msg.sender, msg.value, interestRate);
         emit Deposit(msg.sender, msg.value);
     }
 
