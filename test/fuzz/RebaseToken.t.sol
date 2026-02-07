@@ -190,6 +190,6 @@ contract RebaseTokenTest is Test {
     //     );
 
     //     rebaseToken.setInterestRate(newInterestRate);
-    //     // assertEq(rebaseToken.getInterestRate(), initialInterestRate);
+    //      assertEq(rebaseToken.getInterestRate(), initialInterestRate);
     // }
 }
