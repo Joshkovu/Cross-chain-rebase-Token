@@ -16,7 +16,7 @@ import {IRebaseToken} from "./interfaces/iRebaseToken.sol";
 contract RebaseTokenPool is TokenPool {
     constructor(
         IERC20 _token,
-        uint256 _decimals,
+        // uint256 _decimals,
         address[] memory _allowlist,
         address _rnmProxy,
         address _router
