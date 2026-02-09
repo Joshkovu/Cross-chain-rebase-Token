@@ -18,4 +18,6 @@ contract IRebaseToken {
     function getUserInterestRate(
         address _user
     ) external view returns (uint256) {}
+
+    function grantMintAndBurnRole(address _account) public {}
 }
