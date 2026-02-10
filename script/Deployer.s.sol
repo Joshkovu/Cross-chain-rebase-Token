@@ -40,6 +40,32 @@ contract TokenAndPoolDeployer is Script {
     }
 }
 
+contract SetPermissions is Script {
+    function grantRole(address tokenAddress, address poolAddress) public {
+        vm.startBroadcast();
+        IRebaseToken(tokenAddress).grantMintAndBurnRole(poolAddress);
+        vm.stopBroadcast();
+    }
+
+    function setAdmin(address tokenAddress, address poolAddress) public {
+        CCIPLocalSimulatorFork ccipLocalSimulatorFork = new CCIPLocalSimulatorFork();
+        Register.NetworkDetails memory networkDetails = ccipLocalSimulatorFork
+            .getNetworkDetails(block.chainid);
+        vm.startBroadcast();
+        IRebaseToken(tokenAddress).grantMintAndBurnRole(poolAddress);
+        RegistryModuleOwnerCustom(
+            networkDetails.registryModuleOwnerCustomAddress
+        ).registerAdminViaOwner(address(tokenAddress));
+        TokenAdminRegistry(networkDetails.tokenAdminRegistryAddress)
+            .acceptAdminRole(tokenAddress);
+        TokenAdminRegistry(networkDetails.tokenAdminRegistryAddress).setPool(
+            tokenAddress,
+            poolAddress
+        );
+        vm.stopBroadcast();
+    }
+}
+
 contract VaultDeployer is Script {
     function run(address _rebaseToken) public returns (Vault vault) {
         vm.startBroadcast();
