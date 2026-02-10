@@ -24,7 +24,7 @@ contract RebaseTokenTest is Test {
         rebaseToken = new RebaseToken();
         vault = new Vault(IRebaseToken(address(rebaseToken)));
         rebaseToken.grantMintAndBurnRole(address(vault));
-        (bool success, ) = payable(address(vault)).call{value: 1e18}("");
+        (bool success,) = payable(address(vault)).call{value: 1e18}("");
         console.log(success);
         vm.stopPrank();
     }
@@ -51,11 +51,7 @@ contract RebaseTokenTest is Test {
         // 4. warp the time again by the same amount and check balance again
         vm.warp(block.timestamp + 1 hours);
         uint256 endBalance = rebaseToken.balanceOf(user);
-        assertApproxEqAbs(
-            endBalance - middleBalance,
-            middleBalance - startBalance,
-            1
-        );
+        assertApproxEqAbs(endBalance - middleBalance, middleBalance - startBalance, 1);
         console.log("assert 3 passed");
         vm.stopPrank();
     }
@@ -75,16 +71,11 @@ contract RebaseTokenTest is Test {
     }
 
     function addRewardsToVault(uint256 rewardAmount) public {
-        (bool success, ) = payable(address(vault)).call{value: rewardAmount}(
-            ""
-        );
+        (bool success,) = payable(address(vault)).call{value: rewardAmount}("");
         assertEq(success, true);
     }
 
-    function testRedeemAfterTimePassed(
-        uint256 depositAmount,
-        uint256 time
-    ) public {
+    function testRedeemAfterTimePassed(uint256 depositAmount, uint256 time) public {
         time = bound(time, 1000, type(uint32).max);
         depositAmount = bound(depositAmount, 1e5, type(uint96).max);
         //1. Deposit
@@ -150,14 +141,10 @@ contract RebaseTokenTest is Test {
 
     function testCannotCallMintAndBurn() public {
         vm.prank(user);
-        vm.expectPartialRevert(
-            IAccessControl.AccessControlUnauthorizedAccount.selector
-        );
+        vm.expectPartialRevert(IAccessControl.AccessControlUnauthorizedAccount.selector);
 
         rebaseToken.mint(user, 1e5, rebaseToken.getUserInterestRate(user));
-        vm.expectPartialRevert(
-            IAccessControl.AccessControlUnauthorizedAccount.selector
-        );
+        vm.expectPartialRevert(IAccessControl.AccessControlUnauthorizedAccount.selector);
 
         rebaseToken.burn(user, 1e5);
     }

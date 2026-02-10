@@ -20,15 +20,17 @@ contract RebaseTokenPool is TokenPool {
         address[] memory _allowlist,
         address _rnmProxy,
         address _router
-    ) TokenPool(_token, _allowlist, _rnmProxy, _router) {}
+    )
+        TokenPool(_token, _allowlist, _rnmProxy, _router)
+    {}
 
-    function lockOrBurn(
-        Pool.LockOrBurnInV1 calldata lockOrBurnIn
-    ) external returns (Pool.LockOrBurnOutV1 memory lockOrBurnOut) {
+    function lockOrBurn(Pool.LockOrBurnInV1 calldata lockOrBurnIn)
+        external
+        returns (Pool.LockOrBurnOutV1 memory lockOrBurnOut)
+    {
         _validateLockOrBurn(lockOrBurnIn);
         address receiver = abi.decode(lockOrBurnIn.receiver, (address));
-        uint256 userInterestRate = IRebaseToken(address(i_token))
-            .getUserInterestRate(receiver);
+        uint256 userInterestRate = IRebaseToken(address(i_token)).getUserInterestRate(receiver);
         IRebaseToken(address(i_token)).burn(address(this), lockOrBurnIn.amount);
         lockOrBurnOut = Pool.LockOrBurnOutV1({
             destTokenAddress: getRemoteToken(lockOrBurnIn.remoteChainSelector),
@@ -36,22 +38,13 @@ contract RebaseTokenPool is TokenPool {
         });
     }
 
-    function releaseOrMint(
-        Pool.ReleaseOrMintInV1 calldata releaseOrMintIn
-    ) external returns (Pool.ReleaseOrMintOutV1 memory) {
+    function releaseOrMint(Pool.ReleaseOrMintInV1 calldata releaseOrMintIn)
+        external
+        returns (Pool.ReleaseOrMintOutV1 memory)
+    {
         _validateReleaseOrMint(releaseOrMintIn);
-        uint256 userInterestRate = abi.decode(
-            releaseOrMintIn.sourcePoolData,
-            (uint256)
-        );
-        IRebaseToken(address(i_token)).mint(
-            releaseOrMintIn.receiver,
-            releaseOrMintIn.amount,
-            userInterestRate
-        );
-        return
-            Pool.ReleaseOrMintOutV1({
-                destinationAmount: releaseOrMintIn.amount
-            });
+        uint256 userInterestRate = abi.decode(releaseOrMintIn.sourcePoolData, (uint256));
+        IRebaseToken(address(i_token)).mint(releaseOrMintIn.receiver, releaseOrMintIn.amount, userInterestRate);
+        return Pool.ReleaseOrMintOutV1({destinationAmount: releaseOrMintIn.amount});
     }
 }

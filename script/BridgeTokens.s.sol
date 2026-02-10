@@ -17,12 +17,8 @@ contract BridgeTokensScript is Script {
         address routerAddress,
         uint256 amountToSend
     ) public {
-        Client.EVMTokenAmount[]
-            memory tokenAmounts = new Client.EVMTokenAmount[](1);
-        tokenAmounts[0] = Client.EVMTokenAmount({
-            token: tokenToSendAddress,
-            amount: amountToSend
-        });
+        Client.EVMTokenAmount[] memory tokenAmounts = new Client.EVMTokenAmount[](1);
+        tokenAmounts[0] = Client.EVMTokenAmount({token: tokenToSendAddress, amount: amountToSend});
         // CCIPLocalSimulatorFork ccipLocalSimulatorFork = new CCIPLocalSimulatorFork();
         vm.startBroadcast();
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
@@ -30,21 +26,13 @@ contract BridgeTokensScript is Script {
             data: "",
             tokenAmounts: tokenAmounts,
             feeToken: linkAddress,
-            extraArgs: Client._argsToBytes(
-                Client.EVMExtraArgsV1({gasLimit: 200000})
-            )
+            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 200000}))
         });
         // 1. deploy the vault and rebase token
         // 2. grant the vault mint and burn role on the rebase token
         // 3. add some liquidity to the vault
-        IRouterClient(routerAddress).ccipSend(
-            destinationChainSelector,
-            message
-        );
-        uint256 ccipFee = IRouterClient(routerAddress).getFee(
-            destinationChainSelector,
-            message
-        );
+        IRouterClient(routerAddress).ccipSend(destinationChainSelector, message);
+        uint256 ccipFee = IRouterClient(routerAddress).getFee(destinationChainSelector, message);
         IERC20(linkAddress).approve(routerAddress, ccipFee);
         IERC20(tokenToSendAddress).approve(routerAddress, amountToSend);
         // ccipLocalSimulatorFork.requestLinkFromFaucet(receiverAddress, ccipFee);

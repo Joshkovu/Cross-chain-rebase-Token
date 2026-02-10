@@ -48,7 +48,7 @@ contract Vault {
         I_REBASETOKEN.burn(msg.sender, _amount);
 
         // 2. we need to send the user ETh
-        (bool success, ) = payable(msg.sender).call{value: _amount}("");
+        (bool success,) = payable(msg.sender).call{value: _amount}("");
         if (!success) {
             revert Vault__RedeemFailed();
         }
