@@ -2,7 +2,8 @@
 
 pragma solidity ^0.8.23;
 import {IRebaseToken} from "./interfaces/iRebaseToken.sol";
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+// import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract Vault {
     //pass token address to constructor
